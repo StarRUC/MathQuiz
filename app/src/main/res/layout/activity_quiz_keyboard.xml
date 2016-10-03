@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/anti_theft_t9_grid"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/background_light"
+    android:divider="@android:color/darker_gray"
+    android:orientation="vertical"
+    android:showDividers="middle|beginning|end" >
+
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:divider="@android:color/darker_gray"
+        android:gravity="center"
+        android:showDividers="middle" >
+
+        <TextView
+            android:id="@+id/pad_key_1"
+            android:text="@string/number_one"
+            style="@style/keyboard_number_button"
+            android:textIsSelectable="false" />
+
+        <TextView
+            android:id="@+id/pad_key_2"
+            android:text="@string/number_two"
+            style="@style/keyboard_number_button"
+            android:textIsSelectable="false" />
+
+        <TextView
+            android:id="@+id/pad_key_3"
+            android:text="@string/number_three"
+            style="@style/keyboard_number_button"
+            android:textIsSelectable="false" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:divider="@android:color/darker_gray"
+        android:gravity="center"
+        android:showDividers="middle" >
+
+        <TextView
+            android:id="@+id/pad_key_4"
+            android:text="@string/number_four"
+            style="@style/keyboard_number_button"
+            android:textIsSelectable="false" />
+
+        <TextView
+            android:id="@+id/pad_key_5"
+            android:text="@string/number_five"
+            style="@style/keyboard_number_button"
+            android:textIsSelectable="false" />
+
+        <TextView
+            android:id="@+id/pad_key_6"
+            android:text="@string/number_six"
+            style="@style/keyboard_number_button"
+            android:textIsSelectable="false" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:divider="@android:color/darker_gray"
+        android:gravity="center"
+        android:showDividers="middle" >
+
+        <TextView
+            android:id="@+id/pad_key_7"
+            android:text="@string/number_seven"
+            style="@style/keyboard_number_button"
+            android:textIsSelectable="false" />
+
+        <TextView
+            android:id="@+id/pad_key_8"
+            android:text="@string/number_eight"
+            style="@style/keyboard_number_button"
+            android:textIsSelectable="false" />
+
+        <TextView
+            android:id="@+id/pad_key_9"
+            android:text="@string/number_nine"
+            style="@style/keyboard_number_button"
+            android:textIsSelectable="false" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:divider="@android:color/darker_gray"
+        android:gravity="center"
+        android:showDividers="middle" >
+
+        <TextView
+            android:id="@+id/pad_key_0"
+            android:text="@string/number_zero"
+            style="@style/keyboard_number_button"
+            android:textIsSelectable="false" />
+
+        <TextView
+            android:id="@+id/pad_key_enter"
+            android:text="@string/enter"
+            style="@style/keyboard_number_button"
+            android:textIsSelectable="false" />
+    </TableRow>
+
+</TableLayout>
