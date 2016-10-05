@@ -44,7 +44,7 @@ public class HomeActivity extends AppCompatActivity {
                 intent.putExtra("quizType", quizType);
 //                intent.putExtras(bdl); //Put your Quiz Type in Intent
                 startActivity(intent);
-                finish();
+//                finish();
             }
         };
 

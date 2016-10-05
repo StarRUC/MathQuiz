@@ -4,17 +4,16 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.CountDownTimer;
-import android.os.Handler;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class QuizActivity extends AppCompatActivity {
     int score = 0;
@@ -23,6 +22,7 @@ public class QuizActivity extends AppCompatActivity {
     int expectedAns = 0, ans = 0;
     Random random;
     CountDownTimer countDownTimer;
+    long millisRemaining = 0;
 
     TextView txtQid, txtOpnd1, txtOpnd2, txtOptr;
     EditText ansEditTxt;
@@ -31,26 +31,57 @@ public class QuizActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
-        this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+        Toolbar quizToolbar =
+                (Toolbar) findViewById(R.id.quiz_toolbar);
+        setSupportActionBar(quizToolbar);
+        ActionBar ab = getSupportActionBar();
+
+        // Enable the Up button
+        ab.setDisplayHomeAsUpEnabled(true);
 
         init();
 
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()) {
-//            case android.R.id.home:
-//                countDownTimer.
-//
-//                // go to previous screen when app icon in action bar is clicked
-//                Intent intent = new Intent(this, HomeActivity.class);
-//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                startActivity(intent);
-//                return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            countDownTimer.cancel();
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Are you sure to go back and quit the quiz?")
+                    .setCancelable(true)
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
+                        public void onClick(DialogInterface dialog, int id) {
+                            countDownTimer = new CountDownTimer(millisRemaining, 1000) {
+                                @Override
+                                public void onFinish() {
+                                    validateAnswer();
+                                }
+
+                                @Override
+                                public void onTick(long millisUntilFinished) {
+                                    millisRemaining = millisUntilFinished;
+                                }
+                            }.start();
+                        }
+                    })
+                    .setPositiveButton("Quit", new DialogInterface.OnClickListener(){
+                        public void onClick(DialogInterface dialog, int id) {
+                            finish();
+                            Intent intent = new Intent(QuizActivity.this, HomeActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+
+            final AlertDialog goUpAlert= builder.create();
+            goUpAlert.show();
+
+        }
+        return true;
+    }
 
     private void init() {
         // Get widget objs
@@ -187,9 +218,9 @@ public class QuizActivity extends AppCompatActivity {
                     .setCancelable(false)
                     .setPositiveButton("OK", new DialogInterface.OnClickListener(){
                         public void onClick(DialogInterface dialog, int id) {
+                            finish();
                             Intent intent = new Intent(QuizActivity.this, HomeActivity.class);
                             startActivity(intent);
-                            finish();
                         }
                     });
 
@@ -241,7 +272,7 @@ public class QuizActivity extends AppCompatActivity {
 
         ansEditTxt.setText("");
 
-        countDownTimer = new CountDownTimer(5000, 1000) {
+        countDownTimer = new CountDownTimer(5000, 500) {
             @Override
             public void onFinish() {
                 validateAnswer();
@@ -249,7 +280,7 @@ public class QuizActivity extends AppCompatActivity {
 
             @Override
             public void onTick(long millisUntilFinished) {
-
+                millisRemaining = millisUntilFinished;
             }
         }.start();
     }
