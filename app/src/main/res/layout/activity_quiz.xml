@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_quiz"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -11,6 +12,7 @@
     android:orientation="vertical"
     tools:context="edu.sjsu.starruc.mathquiz.QuizActivity">
 
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/quiz_toolbar"
         android:layout_width="match_parent"
@@ -20,86 +22,18 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-    <TextView
-        android:id="@+id/question_id_txt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text=""
-        android:textSize="20sp" />
-
-    <LinearLayout
+    <fragment
+        android:id="@+id/fragment_question"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:name="edu.sjsu.starruc.mathquiz.QuestionFragment"
+        tools:layout="@layout/fragment_question"/>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="bottom|center"
-                android:layout_margin="5dp"
-                android:text=""
-                android:textSize="28sp" />
-
-            <TextView
-                android:id="@+id/optr_txt"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="bottom|center"
-                android:layout_margin="5dp"
-                android:text=""
-                android:textSize="28sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/opnd1_txt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="5dp"
-                android:text=""
-                android:textSize="28sp" />
-
-            <TextView
-                android:id="@+id/opnd2_txt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="5dp"
-                android:text=""
-                android:textSize="28sp" />
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-
-    <View
-        android:layout_width="100dp"
-        android:layout_height="2dp"
-        android:layout_gravity="center"
-        android:background="@android:color/darker_gray"/>
-
-    <EditText
-        android:id="@+id/ans_txt"
-        android:layout_width="80dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center"
-        android:layout_margin="10dp"
-        android:textSize="24sp" />
-
-    <include layout="@layout/activity_quiz_keyboard"/>
+    <fragment
+        android:id="@+id/fragment_keyboard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:name="edu.sjsu.starruc.mathquiz.KeyboardFragment"
+        tools:layout="@layout/fragment_keyboard"/>
 
 </LinearLayout>

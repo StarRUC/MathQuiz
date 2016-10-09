@@ -3,19 +3,20 @@ package edu.sjsu.starruc.mathquiz;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.CountDownTimer;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Random;
 
-public class QuizActivity extends AppCompatActivity {
+//public class QuizActivity extends AppCompatActivity
+public class QuizActivity extends AppCompatActivity
+        implements KeyboardFragment.KeyboardListener{
     int score = 0;
     int questionId = 0, quizType = 0;
     int opnd1 = 0, opnd2 = 0;
@@ -24,14 +25,31 @@ public class QuizActivity extends AppCompatActivity {
     CountDownTimer countDownTimer;
     long millisRemaining = 0;
 
-    TextView txtQid, txtOpnd1, txtOpnd2, txtOptr;
-    EditText ansEditTxt;
+    QuestionFragment questionFragment;
+    KeyboardFragment keyboardFragment;
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt("score", score);
+        outState.putInt("questionId", questionId);
+        outState.putInt("quizType", quizType);
+        outState.putInt("opnd1", opnd1);
+        outState.putInt("opnd2", opnd2);
+        outState.putInt("expectedAns", expectedAns);
+        outState.putLong("millisRemaining", millisRemaining);
+
+        super.onSaveInstanceState(outState);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
+        random = new Random();
+        questionFragment = (QuestionFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_question);
+        keyboardFragment = (KeyboardFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_keyboard);
+//        getSupportFragmentManager().beginTransaction().add(R.layout.activity_quiz, questionFragment);
 
         Toolbar quizToolbar =
                 (Toolbar) findViewById(R.id.quiz_toolbar);
@@ -41,9 +59,35 @@ public class QuizActivity extends AppCompatActivity {
         // Enable the Up button
         ab.setDisplayHomeAsUpEnabled(true);
 
-        init();
+        if (savedInstanceState != null) {
+            score = savedInstanceState.getInt("score");
+            questionId = savedInstanceState.getInt("questionId");
+            quizType = savedInstanceState.getInt("quizType");
+            opnd1 = savedInstanceState.getInt("opnd1");
+            opnd2 = savedInstanceState.getInt("opnd2");
+            expectedAns = savedInstanceState.getInt("expectedAns");
+            millisRemaining = savedInstanceState.getLong("millisRemaining");
+            setQuestionViewAndTiming(millisRemaining);
+        }
+        else {
+            quizType = getIntent().getIntExtra("quizType", 1);
+            generateQuestion();
+        }
 
     }
+
+
+//    @Override
+//    public void onConfigurationChanged(Configuration newConfig) {
+//        super.onConfigurationChanged(newConfig);
+//
+//        // Checks the orientation of the screen
+//        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+//            Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
+//        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+//            Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+//        }
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -83,106 +127,59 @@ public class QuizActivity extends AppCompatActivity {
         return true;
     }
 
-    private void init() {
-        // Get widget objs
-        txtQid = (TextView) findViewById(R.id.question_id_txt);
-        txtOpnd1 = (TextView) findViewById(R.id.opnd1_txt);
-        txtOpnd2 = (TextView) findViewById(R.id.opnd2_txt);
-        txtOptr = (TextView) findViewById(R.id.optr_txt);
-        ansEditTxt = (EditText) findViewById(R.id.ans_txt);
+    private void generateQuestion() {
+        questionId++;
 
-        // Get Quiz Type
-        quizType = getIntent().getIntExtra("quizType", 1);
-//        Bundle bdl = getIntent().getExtras();
-//        quizType = bdl.getInt("quizType");
+        opnd1 = random.nextInt(10);
+        if (quizType == 2) {
+            opnd2 = random.nextInt(opnd1 + 1);
+        }
+        else {
+            opnd2 = random.nextInt(10);
+        }
 
-        random = new Random();
-
-        // Initialize the widget content in the activity.
-        setQuestionView();
-
-        // Define Listener for Number Pad
-        View.OnClickListener numberKeyListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getNumberPadInput(v);
-            }
-        };
-
-        // Define Listener for Enter Key
-        View.OnClickListener enterKeyListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                countDownTimer.cancel();
-                validateAnswer();
-            }
-        };
-
-        findViewById(R.id.pad_key_0).setOnClickListener(numberKeyListener);
-        findViewById(R.id.pad_key_1).setOnClickListener(numberKeyListener);
-        findViewById(R.id.pad_key_2).setOnClickListener(numberKeyListener);
-        findViewById(R.id.pad_key_3).setOnClickListener(numberKeyListener);
-        findViewById(R.id.pad_key_4).setOnClickListener(numberKeyListener);
-        findViewById(R.id.pad_key_5).setOnClickListener(numberKeyListener);
-        findViewById(R.id.pad_key_6).setOnClickListener(numberKeyListener);
-        findViewById(R.id.pad_key_7).setOnClickListener(numberKeyListener);
-        findViewById(R.id.pad_key_8).setOnClickListener(numberKeyListener);
-        findViewById(R.id.pad_key_9).setOnClickListener(numberKeyListener);
-        findViewById(R.id.pad_key_enter).setOnClickListener(enterKeyListener);
-
-    }
-
-    private void getNumberPadInput(View v) {
-        int digit = 0;
-
-        switch (v.getId()) {
-            case R.id.pad_key_0:
-                digit = 0;
+        ans = 0;
+        switch (quizType) {
+            case 1:
+                expectedAns = opnd1 + opnd2;
                 break;
-            case R.id.pad_key_1:
-                digit = 1;
+            case 2:
+                expectedAns = opnd1 - opnd2;
                 break;
-            case R.id.pad_key_2:
-                digit = 2;
-                break;
-            case R.id.pad_key_3:
-                digit = 3;
-                break;
-            case R.id.pad_key_4:
-                digit = 4;
-                break;
-            case R.id.pad_key_5:
-                digit = 5;
-                break;
-            case R.id.pad_key_6:
-                digit = 6;
-                break;
-            case R.id.pad_key_7:
-                digit = 7;
-                break;
-            case R.id.pad_key_8:
-                digit = 8;
-                break;
-            case R.id.pad_key_9:
-                digit = 9;
+            case 3:
+                expectedAns = opnd1 * opnd2;
                 break;
             default:
-                digit = 0;
+                break;
         }
 
-        ans = ans * 10 + digit;
-        ansEditTxt.setText(String.valueOf(ans));
-        if (ans == expectedAns) {
-            countDownTimer.cancel();
-            validateAnswer();
-        }
+        setQuestionViewAndTiming(5000);
+
     }
 
+    private void setQuestionViewAndTiming(long leftMillis) {
+
+        questionFragment.setQuestionView(questionId, opnd1, opnd2, quizType);
+
+        countDownTimer = new CountDownTimer(leftMillis, 500) {
+            @Override
+            public void onFinish() {
+                validateAnswer();
+            }
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+                millisRemaining = millisUntilFinished;
+            }
+        }.start();
+
+    }
     private void validateAnswer() {
         String ansCorrect = "Correct";
         String ansWrong = "Wrong";
 
         final AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+
         if (ans == expectedAns) {
             score++;
             builder1.setMessage(ansCorrect);
@@ -210,7 +207,7 @@ public class QuizActivity extends AppCompatActivity {
 
 
         if (questionId < 3) {
-            setQuestionView();
+            generateQuestion();
         }
         else {
             AlertDialog.Builder builder2 = new AlertDialog.Builder(this);
@@ -225,6 +222,7 @@ public class QuizActivity extends AppCompatActivity {
                     });
 
             final AlertDialog quizResultAlert= builder2.create();
+//            AlertDialog quizResultAlert= builder2.create();
             new CountDownTimer(1000, 1000) {
                 @Override
                 public void onFinish() {
@@ -239,50 +237,23 @@ public class QuizActivity extends AppCompatActivity {
         }
     }
 
-    private void setQuestionView()
-    {
-        questionId++;
-        txtQid.setText("Question " + questionId + "/10");
 
-        opnd1 = random.nextInt(10);
-        if (quizType == 2) {
-            opnd2 = random.nextInt(opnd1 + 1);
-        }
-        else {
-            opnd2 = random.nextInt(10);
-        }
-        txtOpnd1.setText(String.valueOf(opnd1));
-        txtOpnd2.setText(String.valueOf(opnd2));
-        switch (quizType) {
-            case 1:
-                txtOptr.setText("+");
-                expectedAns = opnd1 + opnd2;
-                break;
-            case 2:
-                txtOptr.setText("-");
-                expectedAns = opnd1 - opnd2;
-                break;
-            case 3:
-                txtOptr.setText("*");
-                expectedAns = opnd1 * opnd2;
-                break;
-            default:
-                break;
+
+    public void pressDigit(int digit) {
+        ans = ans * 10 + digit;
+        questionFragment.setAnswerText(String.valueOf(ans));
+
+        if (ans == expectedAns) {
+            countDownTimer.cancel();
+            validateAnswer();
         }
 
-        ansEditTxt.setText("");
+    }
 
-        countDownTimer = new CountDownTimer(5000, 500) {
-            @Override
-            public void onFinish() {
-                validateAnswer();
-            }
 
-            @Override
-            public void onTick(long millisUntilFinished) {
-                millisRemaining = millisUntilFinished;
-            }
-        }.start();
+    public void pressEnter() {
+        countDownTimer.cancel();
+        validateAnswer();
     }
 }
 
